@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using OrderHub.Core.Services;
 using OrderHub.Web.ViewModels;
@@ -28,6 +29,26 @@ public class ProductsController : Controller
                 IsActive = p.IsActive
             }).ToList()
         };
+
+        return View(vm);
+    }
+
+    public async Task<IActionResult> LowStock(
+        [Range(1, int.MaxValue, ErrorMessage = "門檻必須大於 0")] int threshold = 10)
+    {
+        var vm = new LowStockViewModel { Threshold = threshold };
+
+        if (!ModelState.IsValid)
+            return View(vm);
+
+        var products = await _productService.GetLowStockAsync(threshold);
+        vm.Products = products.Select(p => new LowStockProductRowViewModel
+        {
+            Sku = p.Sku,
+            Name = p.Name,
+            StockQuantity = p.StockQuantity,
+            SoldQuantityLast30Days = p.SoldQuantityLast30Days
+        }).ToList();
 
         return View(vm);
     }

@@ -40,4 +40,6 @@ public static class DisplayHelper
     public static string Money(decimal amount) => $"NT$ {amount:N2}";
 
     public static string LocalTime(DateTime utc) => utc.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+
+    public static string LowStockRowClass(int stockQuantity) => stockQuantity < 5 ? "table-danger" : string.Empty;
 }
