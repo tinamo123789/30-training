@@ -45,8 +45,10 @@ dotnet run --project src/OrderHub.Web
 - 分頁查詢回傳 `PagedResult<T>`（`Common/PagedResult.cs`）
 - View 一律綁 ViewModel（`ViewModels/`，手寫 mapping），不要把 domain model 直接丟給 View
 - 使用者輸入用 DataAnnotations + ModelState 驗證；輸入錯誤絕不能變成 500
+- GET 查詢參數（如篩選用的 threshold/page）用 DataAnnotations 掛在 action 參數本身（例如 `ProductsController.LowStock` 的 `[Range]`），而不是包成 ViewModel 綁定；`ModelState.IsValid` 為 false 時直接 `return View(vm)`，View 用 `asp-validation-for` 顯示錯誤
 - 金額一律用 `decimal`；折扣邏輯集中在 `OrderService`（`GetDiscountRate`/`CalculateSubtotal`/`CalculateTotal`），不要在別處重算
 - 操作結果訊息用 `TempData["Success"] / TempData["Error"]`（`Views/Shared/_Layout.cshtml` 有共用 alert 區塊）
+- 顯示用格式化（狀態文字/badge CSS class、tier 文字、金額、時間）統一用 `OrderHub.Web/Helpers/DisplayHelper.cs`，不要在 Controller/View 各自重寫
 
 ### 領域規則
 
@@ -56,7 +58,7 @@ dotnet run --project src/OrderHub.Web
 
 ## 測試慣例
 
-- 測試都在 `tests/OrderHub.Tests`，用 `TestSetup` 這個共用工具（`CreateContext`/`CreateOrderService`/`AddCustomer`/`AddProduct`）搭建 InMemory DbContext 與 service，不需要 mock repository
+- 測試都在 `tests/OrderHub.Tests`，用 `TestSetup` 這個共用工具（`CreateContext`/`CreateOrderService`/`CreateProductService`/`AddCustomer`/`AddProduct`）搭建 InMemory DbContext 與 service，不需要 mock repository
 - 依 service 方法分類命名測試檔（如 `OrderServiceCancelTests`、`OrderServicePricingTests`），新測試比照既有檔案歸類
 
 ## 重要 / 危險檔案
